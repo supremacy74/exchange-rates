@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>exchange rates</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+
+        *,
+        *::before,
+        *::after {
+            color: #000000;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body,
+        input {
+            font-size: 20px;
+            font-weight: 300;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        input {
+            outline: none;
+            border: none;
+        }
+
+        .root {
+            background: radial-gradient(circle at 5%, #00ffff, #000000);
+            min-height: 100vh;
+        }
+
+        .container {
+            padding: 10px;
+            width: min(100%, 1320px);
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .search {
+            background: #ffffff50;
+            font-size: 35px;
+            padding: 15px;
+        }
+
+        .grid {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .item {
+            display: flex;
+            gap: 5px;
+            width: 100%;
+        }
+
+        .cell {
+            background: #ffffff50;
+            padding: 10px;
+            width: 100%;
+        }
+
+        .panel {
+            display: flex;
+            gap: 5px;
+        }
+
+        .panel__cell {
+            background: #ffffff75;
+            padding: 10px;
+            width: 100%;
+        }
+
+        .field {
+            background: transparent;
+            width: 100%;
+        }
+
+        .field::placeholder {
+            color: #000000;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="root">
+        <div class="container">
+            <input class="search" type="text" placeholder="Search">
+            <div class="panel">
+                <div class="panel__cell"><input class="NumCode field" type="text" placeholder="number"></div>
+                <div class="panel__cell"><input class="CharCode field" type="text" placeholder="char"></div>
+                <div class="panel__cell"><input class="Nominal field" type="text" placeholder="nominal"></div>
+                <div class="panel__cell"><input class="Name field" type="text" placeholder="name"></div>
+                <div class="panel__cell"><input class="Value field" type="text" placeholder="value"></div>
+            </div>
+            <div class="grid"></div>
+        </div>
+    </div>
+    <script>
+
+        const URL = 'http://localhost/exchangeRates/data/exchangeRates.json'
+        const grid = document.querySelector('.grid')
+
+        const fill = item => {
+            grid.innerHTML += `
+                <div class="item">
+                    <div class="cell number">${item.NumCode}</div>
+                    <div class="cell char">${item.CharCode}</div>
+                    <div class="cell nominal">${item.Nominal}</div>
+                    <div class="cell name">${item.Name}</div>
+                    <div class="cell value">${item.Value}</div>
+                </div>
+            `
+        }
+
+        fetch(URL).then(response => response.json()).then(data => {
+
+            data.Valute.forEach(item => fill(item))
+
+            document.querySelectorAll('.field').forEach(item => {
+
+                item.addEventListener('input', event => {
+
+                    console.clear()
+
+                    grid.innerHTML = ''
+
+                    const exchangeRates = data.Valute.filter(item => {
+
+                        let result
+
+                        for (let pair of Object.entries(item)) {
+                            if (typeof pair[1] === 'string') {
+                                if (pair[1].includes(document.querySelector(`.${pair[0]}`).value)) {
+                                    result = true
+                                } else {
+                                    result = false
+                                    break
+                                }
+                            }
+                        }
+
+                        return result
+
+                    })
+
+                    console.log(exchangeRates)
+
+                    exchangeRates.forEach(item => fill(item))
+
+                })
+
+            })
+
+            document.querySelector('.search').addEventListener('input', event => {
+
+                console.clear()
+
+                grid.innerHTML = ''
+
+                const exchangeRates = data.Valute.filter(item => {
+
+                    let result
+
+                    for (let value of Object.values(item)) {
+                        if (typeof value === 'string' && value.includes(event.target.value)) {
+                            result = true
+                            break
+                        }
+                    }
+
+                    return result
+
+                })
+
+                exchangeRates.forEach(item => fill(item))
+
+            })
+
+        })
+
+    </script>
+</body>
+</html>
