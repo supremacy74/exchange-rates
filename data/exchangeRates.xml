@@ -237,4 +237,11 @@
         <Name>Japanese Yen</Name>
         <Value>39,4433</Value>
     </Valute>
+    <Valute ID="R01835">
+        <NumCode>008</NumCode>
+        <CharCode>ALL</CharCode>
+        <Nominal>1</Nominal>
+        <Name>Albanian Lek</Name>
+        <Value>2,1202</Value>
+    </Valute>
 </ValCurs>
